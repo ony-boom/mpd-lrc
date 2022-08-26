@@ -2,13 +2,13 @@ import os from "os";
 import fs from "fs";
 import path from "path";
 import { env } from "./config";
-import { Lrc } from "lrc-kit";
+import { Lrc, Lyric } from "lrc-kit";
 import { mpc } from "./index";
 import blessed from "blessed";
 import { clearInterval } from "timers";
 
 const MUSIC_PATH = path.join(os.homedir(), env.musicPath);
-// let lyrics: Lyric[] = [];
+let lyrics: Lyric[] = [];
 let interval: NodeJS.Timer;
 
 const getLrcPath = (songPath: string): string => {
@@ -123,7 +123,9 @@ export const playLyric = (songPath: string, tittle: string, artist: string) => {
     clearInterval(interval);
   }
 
-  let lyrics = getLyricArray(songPath)!;
+  // cleanup the lyrics array
+  lyrics = [];
+  lyrics = getLyricArray(songPath)!;
 
   let textContent = "";
 
