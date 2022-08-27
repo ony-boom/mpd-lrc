@@ -7,10 +7,10 @@ https://user-images.githubusercontent.com/84435474/186978513-bcdc2614-c4d2-4365-
 
 # Usage
 
-> **_NOTE:_**  For this you will need to have mpd up and running.
+> **_NOTE:_** For this, you will need to have mpd up and running.
 > [hint](https://wiki.archlinux.org/title/Music_Player_Daemon) 💡
 
-For now Just clone this repo:
+For now, Just clone this repo:
 ```bash
 git clone https://github.com/ony-boom/mpd-lrc.git && cd mpd-lrc
 ```
@@ -29,6 +29,6 @@ yarn build && yarn start
 ```
 
 # TODO 🗒️
-- [ ] Refactor and improve rendering process
+- [ ] Refactor and improve the rendering process
 - [ ] Make an executable (.bin, .exe, ...)
 - [ ] Better Readme
