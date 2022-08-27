@@ -59,6 +59,8 @@ const getLyricArray = (songPath: string) => {
   return lyric;
 };
 
+
+
 export const playLyric = (songPath: string, tittle: string, artist: string) => {
   if (interval) {
     clearInterval(interval);
@@ -74,7 +76,6 @@ export const playLyric = (songPath: string, tittle: string, artist: string) => {
   screen.title = `${artist} - ${tittle}`;
 
   const { headerBox, lyricsBox: box } = setBoxes(screen);
-
   if (!lyrics) {
     textContent = `No Lyrics. (No LRC found in the directory of: "${tittle} by ${artist}")`;
     box.setContent(textContent);
@@ -96,23 +97,23 @@ export const playLyric = (songPath: string, tittle: string, artist: string) => {
     let elapsed = await getElapsedTime();
     elapsed = Math.floor(elapsed);
 
-    const syncedLyrics = lyrics.map((lyric) => {
+    const syncedLyrics = lyrics && lyrics.map((lyric) => {
       if (Math.floor(lyric.timestamp) === elapsed) {
         return `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
       }
       return lyric.content;
     });
 
-    box.setContent(syncedLyrics.join("\n"));
+    box.setContent(syncedLyrics && syncedLyrics.join("\n"));
 
     // preserve lyrics state.
     // keep passed lyrics color to yellow
     // TODO: find a better way to do it🥲
-    lyrics = lyrics.map((l, idx) => ({
+    lyrics = lyrics && lyrics.map((l, idx) => ({
       content: syncedLyrics[idx],
       timestamp: l.timestamp,
     }));
 
     screen.render();
-  }, 150);
+  }, 100); // 100 seems to be the perfect one
 };

@@ -35,11 +35,6 @@ export const setBoxes = (screen: blessed.Widgets.Screen) => {
     keys: true,
     vi: true,
     alwaysScroll: true,
-    scrollbar: {
-      style: {
-        bg: "yellow",
-      },
-    },
     screen,
   });
   
@@ -51,7 +46,6 @@ export const setScreen = () => {
     smartCSR: true,
     dockBorders: true,
     fullUnicode: true,
-    fastCSR: true
   });
   
   screen.key(["escape", "q", "C-c"], function () {
