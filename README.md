@@ -14,21 +14,25 @@ For now, Just clone this repo:
 ```bash
 git clone https://github.com/ony-boom/mpd-lrc.git && cd mpd-lrc
 ```
-Edit the .env file
+
+Configure, the configuration file is loaded from: <br>
+`$HOME/.mpdlrcrc` or `$HOME/.config/mpdlrc/config`
+
 ```bash
-cp .env_example .env
+mkdir ~/.config/mpdlrc
+cp .config_example ~/.config/mpdlrc/config # or just ~/.mpdlrcrc
 ```
 
 Install dependencies:
 ```bash
 yarn
 ```
-Then build and just start it
+Then build, see [pkg](https://www.npmjs.com/package/pkg) for more info.
+Then edit `build` scripts in `package.json`  for your need.(Default build is for linux+)
 ```bash
-yarn build && yarn start
+yarn build
 ```
 
 # TODO 🗒️
 - [ ] Refactor and improve the rendering process
-- [ ] Make an executable (.bin, .exe, ...)
-- [ ] Better Readme
+
