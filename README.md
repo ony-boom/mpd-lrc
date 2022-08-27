@@ -7,7 +7,7 @@ https://user-images.githubusercontent.com/84435474/186978513-bcdc2614-c4d2-4365-
 
 # Usage
 
-> **_NOTE:_** For this, you will need to have mpd up and running.
+> **_NOTE:_** For this, you should have mpd up and running.
 > [hint](https://wiki.archlinux.org/title/Music_Player_Daemon) 💡
 
 For now, Just clone this repo:
