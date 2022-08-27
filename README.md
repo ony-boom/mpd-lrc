@@ -23,9 +23,9 @@ Install dependencies:
 ```bash
 yarn
 ```
-Then , just start it
+Then build and just start it
 ```bash
-yarn start
+yarn build && yarn start
 ```
 
 # TODO 🗒️
