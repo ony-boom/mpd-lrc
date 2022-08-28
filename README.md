@@ -2,6 +2,7 @@
 
 A simple terminal based **LRC** file player, made up with the [Music Player Daemon](https://www.musicpd.org/) and node.
 
+[woozy.webm](https://user-images.githubusercontent.com/84435474/187069686-a1f3f2b7-0584-4ba6-b384-b8d98c3f7dd6.webm)
 
 # Usage
 
