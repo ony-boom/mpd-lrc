@@ -4,12 +4,13 @@ import path from "path";
 import { env } from "./config";
 import { Lrc, Lyric } from "lrc-kit";
 import { mpc } from "./index";
-import { clearInterval } from "timers";
 import { setBoxes, setScreen } from "./screen";
+import { Widgets } from "blessed";
 
 const MUSIC_PATH = path.join(os.homedir(), env.musicPath);
 let lyrics: Lyric[] = [];
-let interval: NodeJS.Timer;
+let oldScreen: Widgets.Screen;
+const passedLyrics = new Map<number, string>();
 
 const getLrcPath = (songPath: string): string => {
   return path.dirname(path.join(MUSIC_PATH, songPath));
@@ -59,23 +60,28 @@ const getLyricArray = (songPath: string) => {
   return lyric;
 };
 
-
+const cleanup = () => {
+  lyrics = [];
+  passedLyrics.clear();
+  oldScreen && oldScreen.destroy();
+};
 
 export const playLyric = (songPath: string, tittle: string, artist: string) => {
-  if (interval) {
-    clearInterval(interval);
-  }
+  // cleanup
 
-  // cleanup the lyrics array
-  lyrics = [];
+  cleanup();
+
   lyrics = getLyricArray(songPath)!;
-
   let textContent = "";
 
   const screen = setScreen();
   screen.title = `${artist} - ${tittle}`;
 
+  // with the cleanup(), this prevent screen tearing, i don't know really why though
+  oldScreen = screen;
+
   const { headerBox, lyricsBox: box } = setBoxes(screen);
+
   if (!lyrics) {
     textContent = `No Lyrics. (No LRC found in the directory of: "${tittle} by ${artist}")`;
     box.setContent(textContent);
@@ -93,27 +99,29 @@ export const playLyric = (songPath: string, tittle: string, artist: string) => {
   screen.append(box);
   screen.insertBefore(headerBox, box);
 
-  interval = setInterval(async () => {
+  // TODO: Find a better way to do sync lyrics
+  setInterval(async () => {
     let elapsed = await getElapsedTime();
     elapsed = Math.floor(elapsed);
+    let syncedLyrics = "";
+    lyrics &&
+      lyrics.map((lyric, idx) => {
+        if (Math.floor(lyric.timestamp) === elapsed) {
+          // this extra if check is for some optimization, i don't really how to explain it
+          // but it just prevent some rerendering
+          if (!passedLyrics.has(lyric.timestamp)) {
+            const newText = `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
+            lyrics[idx].content = newText;
+            syncedLyrics += newText;
+            passedLyrics.set(lyric.timestamp, lyric.content);
+            return newText;
+          }
+        }
+        syncedLyrics += `${lyric.content}\n`;
+        return lyric.content;
+      });
 
-    const syncedLyrics = lyrics && lyrics.map((lyric) => {
-      if (Math.floor(lyric.timestamp) === elapsed) {
-        return `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
-      }
-      return lyric.content;
-    });
-
-    box.setContent(syncedLyrics && syncedLyrics.join("\n"));
-
-    // preserve lyrics state.
-    // keep passed lyrics color to yellow
-    // TODO: find a better way to do it🥲
-    lyrics = lyrics && lyrics.map((l, idx) => ({
-      content: syncedLyrics[idx],
-      timestamp: l.timestamp,
-    }));
-
+    box.setContent(syncedLyrics);
     screen.render();
-  }, 100); // 100 seems to be the perfect one
+  }, 100);
 };

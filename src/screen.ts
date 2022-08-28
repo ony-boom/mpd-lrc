@@ -17,7 +17,7 @@ export const setBoxes = (screen: blessed.Widgets.Screen) => {
     },
     screen,
   });
-  
+
   const lyricsBox = blessed.box({
     top: "center",
     left: "center",
@@ -37,17 +37,17 @@ export const setBoxes = (screen: blessed.Widgets.Screen) => {
     alwaysScroll: true,
     screen,
   });
-  
+
   return { headerBox, lyricsBox };
 };
 
 export const setScreen = () => {
   const screen = blessed.screen({
-    smartCSR: true,
     dockBorders: true,
     fullUnicode: true,
+    smartCSR: true,
   });
-  
+
   screen.key(["escape", "q", "C-c"], function () {
     return process.exit(0);
   });

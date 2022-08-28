@@ -17,7 +17,7 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
     "build": "yarn pkg -t node14-linux dist/index.js",
     "prebuild": "tsc"
