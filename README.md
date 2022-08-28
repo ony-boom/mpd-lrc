@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/84435474/186978513-bcdc2614-c4d2-4365-
 > **_NOTE:_** For this, you should have mpd up and running.
 > [hint](https://wiki.archlinux.org/title/Music_Player_Daemon) 💡
 
- You can just download binary file from [release](https://github.com/ony-boom/mpd-lrc/releases) and just configure it, or<br>
+ You can just download the binary from [release](https://github.com/ony-boom/mpd-lrc/releases) and just configure it, or<br>
  <br>
 Clone this repo:
 ```bash
