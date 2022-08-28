@@ -16,7 +16,8 @@ Clone this repo:
 git clone https://github.com/ony-boom/mpd-lrc.git && cd mpd-lrc
 ```
 
-Configure, the configuration file is loaded from: <br>
+### Configuration
+The configuration file is loaded from: <br>
 `$HOME/.mpdlrcrc` or `$HOME/.config/mpdlrc/config`
 
 ```bash
@@ -33,7 +34,3 @@ Edit `build` scripts in `package.json`  for your need.(Default build is for linu
 ```bash
 yarn build
 ```
-
-# TODO 🗒️
-- [ ] Refactor and improve the rendering process
-
