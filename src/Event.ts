@@ -4,7 +4,7 @@ import { playLyric } from "./controller";
 
 const player = new events.EventEmitter();
 
-// prevent rerendering after pause
+// prevent re-rendering after pause
 let cachedCurrent: number;
 
 player.on("play", (currentSong: PlaylistItem) => {
@@ -13,9 +13,15 @@ player.on("play", (currentSong: PlaylistItem) => {
     currentSong.path &&
     currentSong.title &&
     currentSong.artist &&
+    currentSong.duration &&
     currentSong.id !== cachedCurrent
   ) {
-    playLyric(currentSong.path, currentSong.title, currentSong.artist);
+    playLyric(
+      currentSong.path,
+      currentSong.title,
+      currentSong.artist,
+      currentSong.duration
+    );
   }
 });
 

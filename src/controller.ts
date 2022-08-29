@@ -2,15 +2,13 @@ import os from "os";
 import fs from "fs";
 import path from "path";
 import { env } from "./config";
-import { Lrc, Lyric } from "lrc-kit";
+import { Lrc } from "lrc-kit";
 import { mpc } from "./index";
 import { setBoxes, setScreen } from "./screen";
 import { Widgets } from "blessed";
 
 const MUSIC_PATH = path.join(os.homedir(), env.musicPath);
-let lyrics: Lyric[] = [];
 let oldScreen: Widgets.Screen;
-const passedLyrics = new Map<number, string>();
 
 const getLrcPath = (songPath: string): string => {
   return path.dirname(path.join(MUSIC_PATH, songPath));
@@ -60,24 +58,22 @@ const getLyricArray = (songPath: string) => {
   return lyric;
 };
 
-const cleanup = () => {
-  lyrics = [];
-  passedLyrics.clear();
+export const playLyric = (
+  songPath: string,
+  tittle: string,
+  artist: string,
+  duration: number
+) => {
   oldScreen && oldScreen.destroy();
-};
 
-export const playLyric = (songPath: string, tittle: string, artist: string) => {
-  // cleanup
+  const lyrics = getLyricArray(songPath)!;
+  const passedLyrics = new Map();
 
-  cleanup();
-
-  lyrics = getLyricArray(songPath)!;
   let textContent = "";
 
   const screen = setScreen();
   screen.title = `${artist} - ${tittle}`;
 
-  // with the cleanup(), this prevent screen tearing, i don't know really why though
   oldScreen = screen;
 
   const { headerBox, lyricsBox: box } = setBoxes(screen);
@@ -99,29 +95,35 @@ export const playLyric = (songPath: string, tittle: string, artist: string) => {
   screen.append(box);
   screen.insertBefore(headerBox, box);
 
-  // TODO: Find a better way to do sync lyrics
-  setInterval(async () => {
+  // TODO: Find a better way to sync lyrics
+  const interval = setInterval(async () => {
     let elapsed = await getElapsedTime();
     elapsed = Math.floor(elapsed);
+
+    if (elapsed === Math.floor(duration)) {
+      clearInterval(interval);
+    }
+
     let syncedLyrics = "";
-    lyrics &&
-      lyrics.map((lyric, idx) => {
-        if (Math.floor(lyric.timestamp) === elapsed) {
-          // this extra if check is for some optimization, i don't really how to explain it
-          // but it just prevent some rerendering
-          if (!passedLyrics.has(lyric.timestamp)) {
-            const newText = `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
-            lyrics[idx].content = newText;
-            syncedLyrics += newText;
-            passedLyrics.set(lyric.timestamp, lyric.content);
-            return newText;
-          }
+    lyrics.forEach((lyric, idx) => {
+      if (Math.floor(lyric.timestamp) === elapsed) {
+        // this extra if check is for some optimization, I don't really know how to explain it,
+        // but it just prevents some re-rendering
+        if (!passedLyrics.has(lyric.timestamp)) {
+          const newText = `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
+          lyrics[idx].content = newText;
+          syncedLyrics += newText;
+          passedLyrics.set(lyric.timestamp, lyric.content);
+          return;
+        } else {
+          syncedLyrics += `${lyric.content}\n`;
+          return;
         }
-        syncedLyrics += `${lyric.content}\n`;
-        return lyric.content;
-      });
+      }
+      syncedLyrics += `${lyric.content}\n`;
+    });
 
     box.setContent(syncedLyrics);
     screen.render();
-  }, 100);
+  }, 200);
 };
