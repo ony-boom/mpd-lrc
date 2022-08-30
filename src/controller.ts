@@ -4,11 +4,9 @@ import path from "path";
 import { env } from "./config";
 import { Lrc } from "lrc-kit";
 import { mpc } from "./index";
-import { setBoxes, setScreen } from "./screen";
-import { Widgets } from "blessed";
+import renderScreen from "./screen";
 
 const MUSIC_PATH = path.join(os.homedir(), env.musicPath);
-let oldScreen: Widgets.Screen;
 
 const getLrcPath = (songPath: string): string => {
   return path.dirname(path.join(MUSIC_PATH, songPath));
@@ -64,66 +62,7 @@ export const playLyric = (
   artist: string,
   duration: number
 ) => {
-  oldScreen && oldScreen.destroy();
-
-  const lyrics = getLyricArray(songPath)!;
-  const passedLyrics = new Map();
-
-  let textContent = "";
-
-  const screen = setScreen();
-  screen.title = `${artist} - ${tittle}`;
-
-  oldScreen = screen;
-
-  const { headerBox, lyricsBox: box } = setBoxes(screen);
-
-  if (!lyrics) {
-    textContent = `No Lyrics. (No LRC found in the directory of: "${tittle} by ${artist}")`;
-    box.setContent(textContent);
-    screen.append(box);
-    screen.render();
-    return;
-  }
-
-  for (const lyric of lyrics) {
-    if (lyric) textContent += `${lyric.content}\n`;
-  }
-
-  box.setContent(textContent);
-  headerBox.setContent(`{bold}${artist} - ${tittle}{/bold}`);
-  screen.append(box);
-  screen.insertBefore(headerBox, box);
-
-  // TODO: Find a better way to sync lyrics
-  const interval = setInterval(async () => {
-    let elapsed = await getElapsedTime();
-    elapsed = Math.floor(elapsed);
-
-    if (elapsed === Math.floor(duration)) {
-      clearInterval(interval);
-    }
-
-    let syncedLyrics = "";
-    lyrics.forEach((lyric, idx) => {
-      if (Math.floor(lyric.timestamp) === elapsed) {
-        // this extra if check is for some optimization, I don't really know how to explain it,
-        // but it just prevents some re-rendering
-        if (!passedLyrics.has(lyric.timestamp)) {
-          const newText = `{yellow-fg}${lyric.content}{yellow-fg}\n{/}`;
-          lyrics[idx].content = newText;
-          syncedLyrics += newText;
-          passedLyrics.set(lyric.timestamp, lyric.content);
-          return;
-        } else {
-          syncedLyrics += `${lyric.content}\n`;
-          return;
-        }
-      }
-      syncedLyrics += `${lyric.content}\n`;
-    });
-
-    box.setContent(syncedLyrics);
-    screen.render();
-  }, 200);
+  const screenTittle = `${artist} - ${tittle}`;
+  const lyric = getLyricArray(songPath);
+  renderScreen(screenTittle, lyric);
 };
