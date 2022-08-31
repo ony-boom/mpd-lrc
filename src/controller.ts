@@ -60,9 +60,8 @@ export const playLyric = (
   songPath: string,
   tittle: string,
   artist: string,
-  duration: number
 ) => {
   const screenTittle = `${artist} - ${tittle}`;
   const lyric = getLyricArray(songPath);
-  renderScreen(screenTittle, lyric);
+  return renderScreen(screenTittle, lyric);
 };

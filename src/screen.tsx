@@ -1,8 +1,8 @@
 import React from "react";
 import blessed from "blessed";
 import { render } from "react-blessed";
-import chalk from "chalk";
 import { Lyric } from "lrc-kit";
+import chalk from "chalk";
 
 interface HeaderProps {
   tittle: string;
@@ -11,7 +11,7 @@ interface HeaderProps {
 class Header extends React.Component<HeaderProps> {
   render() {
     return (
-      <blessed-box
+      <box
         left="center"
         width="100%"
         height="12%"
@@ -22,9 +22,8 @@ class Header extends React.Component<HeaderProps> {
           top: 0,
           bottom: 0,
         }}
-      >
-        {chalk.green(this.props.tittle)}
-      </blessed-box>
+        content={chalk.green(this.props.tittle)}
+      />
     );
   }
 }
@@ -54,9 +53,9 @@ class LyricsBox extends React.Component<LyricsBoxProps> {
         mouse={true}
         keys={true}
         vi={true}
-      >
-        {this.props.lyricsText}
-      </box>
+        tags={true}
+        content={this.props.lyricsText}
+      />
     );
   }
 }
@@ -97,14 +96,15 @@ const renderScreen = (screenTittle: string, lyrics: Lyric[] | undefined) => {
     title: "lrc",
     dockBorders: true,
     autoPadding: true,
+    fullUnicode: true,
+    fastCSR: true,
   });
 
   screen.key(["escape", "q", "C-c"], function () {
     return process.exit(0);
   });
 
-  screen.title = screenTittle;
-  return render(
+  render(
     <App
       tittle={screenTittle}
       lyrics={lyrics}
@@ -112,6 +112,8 @@ const renderScreen = (screenTittle: string, lyrics: Lyric[] | undefined) => {
     />,
     screen
   );
+
+  return screen;
 };
 
 export default renderScreen;
