@@ -3,92 +3,107 @@ import blessed from "blessed";
 import { render } from "react-blessed";
 import { Lyric } from "lrc-kit";
 import chalk from "chalk";
+import { mpc } from "./index";
 
 interface HeaderProps {
   tittle: string;
 }
 
-class Header extends React.Component<HeaderProps> {
-  render() {
-    return (
-      <box
-        left="center"
-        width="100%"
-        height="12%"
-        border={{ type: "line" }}
-        padding={{
-          left: 1,
-          right: 1,
-          top: 0,
-          bottom: 0,
-        }}
-        content={chalk.green(this.props.tittle)}
-      />
-    );
-  }
-}
+const Header: React.FC<HeaderProps> = ({ tittle }) => {
+  return (
+    <box
+      left="center"
+      width="100%"
+      height="12%"
+      border={{ type: "line" }}
+      padding={{
+        left: 1,
+        right: 1,
+        top: 0,
+        bottom: 0,
+      }}
+      content={chalk.green(tittle)}
+    />
+  );
+};
 
 interface LyricsBoxProps {
   lyricsText: string;
   currentlyPlaying: string;
 }
 
-class LyricsBox extends React.Component<LyricsBoxProps> {
-  render() {
-    return (
-      <box
-        top="center"
-        left="center"
-        width="100%"
-        height="92%"
-        border="line"
-        padding={{
-          left: 1,
-          right: 1,
-          top: 0,
-          bottom: 0,
-        }}
-        scrollable={true}
-        alwaysScroll={true}
-        mouse={true}
-        keys={true}
-        vi={true}
-        tags={true}
-        content={this.props.lyricsText}
-      />
-    );
-  }
-}
+const LyricsBox: React.FC<LyricsBoxProps> = ({ lyricsText }) => {
+  return (
+    <box
+      top="center"
+      left="center"
+      width="100%"
+      height="92%"
+      border="line"
+      padding={{
+        left: 1,
+        right: 1,
+        top: 0,
+        bottom: 0,
+      }}
+      scrollable={true}
+      alwaysScroll={true}
+      mouse={true}
+      keys={true}
+      vi={true}
+      tags={true}
+      content={lyricsText}
+    />
+  );
+};
 
 type AppProps = HeaderProps &
   Omit<LyricsBoxProps, "lyricsText"> & {
     lyrics: Lyric[] | undefined;
   };
 
-class App extends React.Component<AppProps> {
-  render() {
-    const { lyrics } = this.props;
-    let lyricsText = "";
+const App: React.FC<AppProps> = ({ lyrics, tittle, currentlyPlaying }) => {
+  let lyricsText = "";
+  const [elapsedTime, setElapsedTime] = React.useState(0);
 
-    if (lyrics) {
-      for (const lyric of lyrics) {
-        lyricsText += `${lyric.content}\n`;
+  React.useEffect(() => {
+    const interval = setInterval(async () => {
+      const status = await mpc.status.status();
+      if (status.elapsed) setElapsedTime(status.elapsed);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (lyrics) {
+    for (let i = 0; i < lyrics.length; i++) {
+      const currentLyric = lyrics[i];
+      let nextLyric = lyrics[i + 1];
+      nextLyric = nextLyric
+        ? nextLyric
+        : { ...currentLyric, timestamp: currentLyric.timestamp + 100 };
+      if (
+        Math.ceil(elapsedTime) < Math.ceil(nextLyric.timestamp) &&
+        Math.ceil(elapsedTime) >= Math.ceil(currentLyric.timestamp)
+      ) {
+        lyricsText += `${chalk.bgYellow(
+          chalk.black(`${currentLyric.content}\n{/}`)
+        )}`;
+      } else {
+        lyricsText += `${currentLyric.content}\n`;
       }
-    } else {
-      lyricsText = `No lyrics found. (Can't find LRC file in the directory of ${this.props.currentlyPlaying})`;
     }
-
-    return (
-      <element>
-        <Header tittle={this.props.tittle} />
-        <LyricsBox
-          lyricsText={lyricsText}
-          currentlyPlaying={this.props.currentlyPlaying}
-        />
-      </element>
-    );
+  } else {
+    lyricsText = `No lyrics found. (Can't find LRC file in the directory of ${currentlyPlaying})`;
   }
-}
+
+  return (
+    <element>
+      <Header tittle={tittle} />
+      <LyricsBox lyricsText={lyricsText} currentlyPlaying={currentlyPlaying} />
+    </element>
+  );
+};
 
 const renderScreen = (screenTittle: string, lyrics: Lyric[] | undefined) => {
   const screen = blessed.screen({
