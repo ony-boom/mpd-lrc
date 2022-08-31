@@ -2,15 +2,14 @@
 
 A simple terminal based **LRC** file player, made up with the [Music Player Daemon](https://www.musicpd.org/) and node.
 
-[woozy.webm](https://user-images.githubusercontent.com/84435474/187069686-a1f3f2b7-0584-4ba6-b384-b8d98c3f7dd6.webm)
+[mdp-lrc-demo.webm](https://user-images.githubusercontent.com/84435474/187713102-868838df-1761-4fe6-abd1-772153041cb9.webm)
+
 
 # Usage
 
 > **_NOTE:_** For this, you should have mpd up and running.
 > [hint](https://wiki.archlinux.org/title/Music_Player_Daemon) 💡
 
- You can just download the binary from [release](https://github.com/ony-boom/mpd-lrc/releases) and just configure it, or<br>
- <br>
 Clone this repo:
 ```bash
 git clone https://github.com/ony-boom/mpd-lrc.git && cd mpd-lrc
