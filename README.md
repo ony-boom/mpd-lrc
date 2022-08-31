@@ -15,15 +15,6 @@ Clone this repo:
 git clone https://github.com/ony-boom/mpd-lrc.git && cd mpd-lrc
 ```
 
-### Configuration
-The configuration file is loaded from: <br>
-`$HOME/.mpdlrcrc` or `$HOME/.config/mpdlrc/config`
-
-```bash
-mkdir ~/.config/mpdlrc
-cp .config_example ~/.config/mpdlrc/config # or just ~/.mpdlrcrc
-```
-
 Install dependencies:
 ```bash
 yarn
@@ -32,4 +23,14 @@ Then build, see [pkg](https://www.npmjs.com/package/pkg) for more info. <br>
 Edit `build` scripts in `package.json`  for your need.(Default build is for linux)
 ```bash
 yarn build
+```
+
+
+### Configuration
+The configuration file is loaded from: <br>
+`$HOME/.mpdlrcrc` or `$HOME/.config/mpdlrc/config`
+
+```bash
+mkdir ~/.config/mpdlrc
+cp .config_example ~/.config/mpdlrc/config # or just ~/.mpdlrcrc
 ```
