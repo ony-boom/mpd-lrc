@@ -5,15 +5,18 @@ import { Widgets } from "blessed";
 
 const player = new events.EventEmitter();
 
-let oldScreen: Widgets.Screen;
+let oldScreen: Widgets.Screen | null;
 
 // prevent re-rendering after pause
 let cachedCurrent: number;
 
 const handleChange = (newSong: number) => {
   cachedCurrent = newSong;
-  oldScreen.children.forEach((c) => c.destroy());
-  oldScreen.destroy();
+  if (oldScreen) {
+    oldScreen.children.forEach((c) => c.destroy());
+    oldScreen.destroy();
+    oldScreen = null;
+  }
 };
 
 player.on("play", (currentSong: PlaylistItem) => {
@@ -22,6 +25,7 @@ player.on("play", (currentSong: PlaylistItem) => {
     currentSong.path &&
     currentSong.title &&
     currentSong.artist &&
+    currentSong.id &&
     currentSong.id !== cachedCurrent
   ) {
     oldScreen = playLyric(
@@ -29,6 +33,7 @@ player.on("play", (currentSong: PlaylistItem) => {
       currentSong.title,
       currentSong.artist
     );
+    cachedCurrent = currentSong.id;
   }
 });
 
