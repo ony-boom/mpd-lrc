@@ -62,16 +62,19 @@ type AppProps = HeaderProps &
     lyrics: Lyric[] | undefined;
   };
 
+
+let oldInterval: NodeJS.Timer | null;
 const App: React.FC<AppProps> = ({ lyrics, tittle, currentlyPlaying }) => {
   let lyricsText = "";
   const [elapsedTime, setElapsedTime] = React.useState(0);
 
   React.useEffect(() => {
+    oldInterval && clearInterval(oldInterval);
     const interval = setInterval(async () => {
       const status = await mpc.status.status();
       if (status.elapsed) setElapsedTime(status.elapsed);
     }, 100);
-
+    oldInterval = interval;
     return () => clearInterval(interval);
   }, []);
 
@@ -79,9 +82,14 @@ const App: React.FC<AppProps> = ({ lyrics, tittle, currentlyPlaying }) => {
     for (let i = 0; i < lyrics.length; i++) {
       const currentLyric = lyrics[i];
       let nextLyric = lyrics[i + 1];
-      nextLyric = nextLyric
-        ? nextLyric
-        : { ...currentLyric, timestamp: currentLyric.timestamp + 100 };
+
+      if (!nextLyric) {
+        nextLyric = {
+          ...currentLyric,
+          timestamp: currentLyric.timestamp + 100,
+        };
+      }
+
       if (
         Math.ceil(elapsedTime) < Math.ceil(nextLyric.timestamp) &&
         Math.ceil(elapsedTime) >= Math.ceil(currentLyric.timestamp)
@@ -95,6 +103,10 @@ const App: React.FC<AppProps> = ({ lyrics, tittle, currentlyPlaying }) => {
     }
   } else {
     lyricsText = `No lyrics found. (Can't find LRC file in the directory of ${currentlyPlaying})`;
+   if (oldInterval) {
+     clearInterval(oldInterval);
+     oldInterval = null;
+   }
   }
 
   return (
