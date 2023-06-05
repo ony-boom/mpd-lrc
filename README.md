@@ -20,7 +20,7 @@ Install dependencies:
 yarn
 ```
 Then build, see [pkg](https://www.npmjs.com/package/pkg) for more info. <br>
-Edit `build` scripts in `package.json`  for your need.(Default build is for linux)
+Edit `build` scripts in `package.json`  for your need.
 ```bash
 yarn build
 ```
