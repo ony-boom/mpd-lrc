@@ -1,4 +1,4 @@
-module ony-boom/mpd-lrc
+module github.com/ony-boom/mpd-lrc
 
 go 1.21.0
 
