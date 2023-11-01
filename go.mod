@@ -29,4 +29,4 @@ require (
 	golang.org/x/text v0.3.8 // indirect
 )
 
-replace github.com/ony-boom/mpd-lrc => github.com/ony-boom/mpd-lrc v0.1.0-alpha
+replace ony-boom/mpd-lrc => github.com/ony-boom/mpd-lrc
