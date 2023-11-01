@@ -28,5 +28,3 @@ require (
 	golang.org/x/term v0.6.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
-
-replace ony-boom/mpd-lrc => github.com/ony-boom/mpd-lrc
