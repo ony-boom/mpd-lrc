@@ -1,46 +1,27 @@
 package main
 
 import (
-	"sort"
 	"strings"
 )
 
 type Lyric struct {
 	Timestamp float64
 	Content   string
-	Active    bool
-}
-
-type CombineLyric struct {
-	Timestamps []float64
-	Content    string
 }
 
 type Info map[string]string
 
-type LineFormat string
-
-const (
-	CRLF LineFormat = "\r\n"
-	CR   LineFormat = "\r"
-	LF   LineFormat = "\n"
-)
-
-type ToStringOptions struct {
-	Combine    bool
-	Sort       bool
-	LineFormat LineFormat
-}
-
 type Lrc struct {
-	Info   Info
-	Lyrics []Lyric
+	Info    Info
+	Lyrics  []Lyric
+	lrcType LyricType
 }
 
 func (lrc *Lrc) Parse(text string) {
 	lines := strings.Split(text, "\n")
 	lyrics := make([]Lyric, 0)
 	info := make(Info)
+	lrc.lrcType = LyricSynced
 
 	for _, line := range lines {
 		parsedLine := parseLine(line)
@@ -51,15 +32,14 @@ func (lrc *Lrc) Parse(text string) {
 			for _, timestamp := range parsedLine.Timestamps {
 				lyrics = append(lyrics, Lyric{Timestamp: timestamp, Content: parsedLine.Content})
 			}
+
+		case InvalidLine:
+			lyrics = append(lyrics, Lyric{Timestamp: 0, Content: line})
+			lrc.lrcType = LyricUnSynced
 		}
 	}
 
 	lrc.Info = info
-
-	sort.SliceStable(lyrics, func(i, j int) bool {
-		return lyrics[i].Timestamp < lyrics[j].Timestamp
-	})
-
 	lrc.Lyrics = lyrics
 }
 
@@ -70,4 +50,30 @@ func (lrc *Lrc) Offset(offsetTime float64) {
 			lrc.Lyrics[i].Timestamp = 0
 		}
 	}
+}
+
+func (lrc *Lrc) Clone() *Lrc {
+	clonedLrc := &Lrc{
+		Info:    make(Info),
+		Lyrics:  make([]Lyric, len(lrc.Lyrics)),
+		lrcType: lrc.lrcType,
+	}
+
+	for key, value := range lrc.Info {
+		clonedLrc.Info[key] = value
+	}
+
+	copy(clonedLrc.Lyrics, lrc.Lyrics)
+
+	return clonedLrc
+}
+
+func (lrc *Lrc) ToString() string {
+	content := ""
+	for _, lrcLine := range lrc.Lyrics {
+		content += lrcLine.Content + "\n"
+	}
+
+	content = strings.TrimSpace(content)
+	return content
 }

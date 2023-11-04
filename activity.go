@@ -8,7 +8,6 @@ import (
 )
 
 func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
-	parser := Lrc{}
 	return func() tea.Msg {
 		line := ""
 		var elapsed float64 = 0
@@ -23,24 +22,22 @@ func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 				lrcString, err := conn.getLrcString()
 
 				if err != nil {
-					lrcString = fmt.Sprintf("[00:00]No .lrc file in the directory of %s", title)
+					lrcString = fmt.Sprintf("No .lrc file in the directory of %s", title)
 				}
+
 				parser.Parse(lrcString)
 
-				msg = responseMsg{title: title, lines: parser.Lyrics}
+				msg = responseMsg{title: title, lyricType: parser.lrcType}
 
 				line = title
-				sub <- msg
+				runner.Reset()
 			}
 
 			if elapsed != newElapsed {
-
-				setActiveLine(newElapsed, &msg.lines)
-
 				elapsed = newElapsed
-
-				sub <- msg
+				runner.TimeUpdate(elapsed)
 			}
+			sub <- msg
 
 			time.Sleep(time.Millisecond * 250)
 		}

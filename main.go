@@ -9,9 +9,16 @@ import (
 	"github.com/fhs/gompd/v2/mpd"
 )
 
+type LyricType uint
+
+const (
+	LyricSynced LyricType = iota
+	LyricUnSynced
+)
+
 type responseMsg struct {
-	title string
-	lines []Lyric
+	title     string
+	lyricType LyricType
 }
 
 type model struct {
@@ -20,10 +27,14 @@ type model struct {
 	followLine    bool
 	title         string
 	content       string
+	lyricType     LyricType
 	viewport      viewport.Model
 	mpdConnection myMpdConnection
 	state         chan responseMsg
 }
+
+var parser = Lrc{}
+var runner = NewRunner(&parser, false)
 
 func main() {
 	conf := getConfig()
@@ -40,7 +51,7 @@ func main() {
 	)
 
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("Sorry, there's been an error: %v", err)
 		os.Exit(1)
 	}
 }

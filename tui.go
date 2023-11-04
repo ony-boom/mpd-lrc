@@ -51,14 +51,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		if msg.String() == "ctrl+f" {
-			m.followLine = !m.followLine
+			m.followLine = !m.followLine && m.isLyricSynced()
 		}
 
 	case tea.MouseMsg:
 
 	case responseMsg:
 		m.title = msg.title
-		m.content, m.activeLine = getContent(msg.lines)
+		m.lyricType = msg.lyricType
+
+		if m.isLyricSynced() {
+			m.content, m.activeLine = getSyncedContent()
+		} else {
+			m.followLine = false
+			m.content = parser.ToString()
+		}
+
+		cmds = append(cmds, waitForActivity(m.state))
 
 	case tea.WindowSizeMsg:
 		headerHeight := lipgloss.Height(m.headerView())
@@ -73,18 +82,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	// Just in case I decided to add style to thisq
+	// Just in case I decided to add style to this
 	content := m.viewport.Style.Render(m.content)
 	m.viewport.SetContent(content)
 
-	isVisible := isLineVisible(m.viewport.YOffset, m.viewport.Height, m.activeLine, m.viewport.TotalLineCount())
+	if m.lyricType == LyricSynced {
+		isVisible := isLineVisible(m.viewport.YOffset, m.viewport.Height, m.activeLine, m.viewport.TotalLineCount())
 
-	if !isVisible && m.followLine {
-		m.viewport.SetYOffset(m.activeLine)
+		if !isVisible && m.followLine {
+			m.viewport.SetYOffset(m.activeLine)
+		}
 	}
 
 	m.viewport, cmd = m.viewport.Update(msg)
-	cmds = append(cmds, cmd, waitForActivity(m.state))
+	cmds = append(cmds, cmd)
 
 	return m, tea.Batch(cmds...)
 }
@@ -93,26 +104,25 @@ func (m model) View() string {
 	if !m.ready {
 		return "\n  Initializing..."
 	}
+
 	return baseStyle.Render(fmt.Sprintf("%s\n%s", m.headerView(), m.viewport.View()))
 }
 
-func getContent(lines []Lyric) (string, int) {
+func getSyncedContent() (string, int) {
 	content := ""
-	activeLine := 0
 
-	for lineIndex, lrcLine := range lines {
+	for index, lrcLine := range parser.Lyrics {
 		newLine := lrcLine.Content
 
-		if lrcLine.Active {
+		if index == runner.CurIndex() {
 			newLine = activeLineStyle().Render(newLine)
-			activeLine = lineIndex
 		}
 
 		content += newLine + "\n"
 	}
 
 	content = strings.TrimSpace(content)
-	return content, activeLine
+	return content, runner.CurIndex()
 }
 
 func isLineVisible(YOffset, height, lineIndex, totalLines int) bool {
@@ -127,9 +137,9 @@ func isLineVisible(YOffset, height, lineIndex, totalLines int) bool {
 }
 
 func (m model) headerView() string {
+
 	syncIcon := "󰯓"
 	followActiveStyle.Foreground(lipgloss.Color("2"))
-
 	if !m.followLine {
 		syncIcon = "󱔶"
 		followActiveStyle.Foreground(lipgloss.Color("9"))
@@ -139,4 +149,8 @@ func (m model) headerView() string {
 	title := titleStyle.Width((m.viewport.Width - paddingInline - basePadding) - lipgloss.Width(syncIcon)).Render(m.title)
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, title, syncIcon)
+}
+
+func (m model) isLyricSynced() bool {
+	return m.lyricType == LyricSynced
 }
