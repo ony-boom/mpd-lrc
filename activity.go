@@ -31,15 +31,16 @@ func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 
 				line = title
 				runner.Reset()
+				sub <- msg
 			}
 
 			if elapsed != newElapsed {
 				elapsed = newElapsed
-				runner.TimeUpdate(elapsed)
+				sub <- msg
 			}
-			sub <- msg
 
 			time.Sleep(time.Millisecond * 250)
+			runner.TimeUpdate(elapsed)
 		}
 	}
 }

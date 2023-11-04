@@ -137,9 +137,9 @@ func isLineVisible(YOffset, height, lineIndex, totalLines int) bool {
 }
 
 func (m model) headerView() string {
-
 	syncIcon := "󰯓"
 	followActiveStyle.Foreground(lipgloss.Color("2"))
+
 	if !m.followLine {
 		syncIcon = "󱔶"
 		followActiveStyle.Foreground(lipgloss.Color("9"))
