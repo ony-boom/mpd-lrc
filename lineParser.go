@@ -54,7 +54,7 @@ func parseTime(tags []string, content string) TimeLine {
 		if len(matches) != 0 {
 			minutes, _ := strconv.Atoi(matches[1])
 			seconds, _ := strconv.ParseFloat(strings.ReplaceAll(matches[2], " ", ""), 64)
-			timestamps = append(timestamps, float64(minutes*60)+seconds)
+			timestamps = append(timestamps, toFixed(float64(minutes*60)+seconds, 4))
 		}
 	}
 	return TimeLine{

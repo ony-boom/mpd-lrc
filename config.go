@@ -14,7 +14,9 @@ type Config struct {
 	Host            string `toml:"host"`
 	MusicPath       string `toml:"musicPath"`
 	TitleColor      string `toml:"titleColor"`
+	PollingDelay    int    `toml:"pollingDelay"`
 	ActiveLineColor string `toml:"activeLineColor"`
+	ServerPort      int    `toml:"serverPort"`
 }
 
 func getConfig() Config {
@@ -26,6 +28,8 @@ func getConfig() Config {
 		return Config{
 			ActiveLineColor: "3",
 			TitleColor:      "2",
+			PollingDelay:    150,
+			ServerPort:      6900,
 			Port:            6600,
 			Host:            "127.0.0.1",
 			MusicPath:       filepath.Join("~/music"),

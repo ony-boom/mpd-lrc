@@ -54,8 +54,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.followLine = !m.followLine && m.isLyricSynced()
 		}
 
-	case tea.MouseMsg:
-
 	case responseMsg:
 		m.title = msg.title
 		m.lyricType = msg.lyricType
@@ -101,6 +99,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.isServerOnly {
+		return ""
+	}
+
 	if !m.ready {
 		return "\n  Initializing..."
 	}
