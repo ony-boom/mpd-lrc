@@ -1,4 +1,5 @@
 # mpd-lrc
+This was for learning purposes (go stuff).
 
 A useless cli to show current song lyrics, using mpd
 
@@ -9,8 +10,5 @@ Build, and that's it.
 
 ### TODO
 
-- \[ \] Propper workflow
-- \[ \] Test
-- \[ \] Packages
 - \[ \] Find out why there's two or more active line,
   unless we manually scroll or change window size
