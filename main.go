@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
@@ -24,7 +23,6 @@ type responseMsg struct {
 
 type model struct {
 	activeLine    int
-	isServerOnly  bool
 	ready         bool
 	followLine    bool
 	title         string
@@ -39,14 +37,6 @@ var parser = Lrc{}
 var runner = NewRunner(&parser, false)
 
 func main() {
-	var serverOnly bool
-
-	flag.BoolVar(&serverOnly, "s", false, "Start only the server")
-
-	flag.Parse()
-
-	startServer()
-
 	conf := getConfig()
 	mpdConnection := connect(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 
@@ -54,7 +44,7 @@ func main() {
 		_ = conn.Close()
 	}(mpdConnection)
 
-	appModel := initModel(mpdConnection, serverOnly)
+	appModel := initModel(mpdConnection)
 
 	p := tea.NewProgram(
 		appModel,
@@ -62,19 +52,13 @@ func main() {
 		tea.WithMouseCellMotion(),
 	)
 
-	if serverOnly {
-		p = tea.NewProgram(
-			appModel,
-		)
-	}
-
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Sorry, there's been an error: %v", err)
 		os.Exit(1)
 	}
 }
 
-func initModel(mpdConn *mpd.Client, isServerOnly bool) model {
+func initModel(mpdConn *mpd.Client) model {
 	myMpdConnection := myMpdConnection{}
 	myMpdConnection.initConn(mpdConn)
 
@@ -84,7 +68,6 @@ func initModel(mpdConn *mpd.Client, isServerOnly bool) model {
 		content:       "",
 		followLine:    true,
 		title:         title,
-		isServerOnly:  isServerOnly,
 		mpdConnection: myMpdConnection,
 		state:         make(chan responseMsg),
 	}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -21,7 +20,10 @@ var (
 	titleStyle = func() lipgloss.Style {
 		color := getConfig().TitleColor
 		b := lipgloss.NormalBorder()
-		return lipgloss.NewStyle().Foreground(lipgloss.Color(color)).Border(b, true, false, true, false).Padding(paddingBlock, paddingInline)
+		return lipgloss.NewStyle().
+			Foreground(lipgloss.Color(color)).
+			Border(b, true, false, true, false).
+			Padding(paddingBlock, paddingInline)
 	}()
 
 	followActiveStyle = func() lipgloss.Style {
@@ -99,14 +101,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	if m.isServerOnly {
-		return ""
-	}
-
 	if !m.ready {
 		return "\n  Initializing..."
 	}
-
 	return baseStyle.Render(fmt.Sprintf("%s\n%s", m.headerView(), m.viewport.View()))
 }
 
@@ -114,16 +111,17 @@ func getSyncedContent() (string, int) {
 	content := ""
 
 	for index, lrcLine := range parser.Lyrics {
-		newLine := lrcLine.Content
+		newLine := lipgloss.NewStyle().UnsetForeground().Render(lrcLine.Content)
 
 		if index == runner.CurIndex() {
 			newLine = activeLineStyle().Render(newLine)
 		}
 
-		content += newLine + "\n"
+		if lrcLine.Timestamp != parser.Lyrics[len(parser.Lyrics)-1].Timestamp {
+			content += newLine + "\n"
+		}
 	}
 
-	content = strings.TrimSpace(content)
 	return content, runner.CurIndex()
 }
 

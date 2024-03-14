@@ -2,11 +2,11 @@ package main
 
 import (
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/mitchellh/go-homedir"
 )
 
 type Config struct {
@@ -23,6 +23,11 @@ func getConfig() Config {
 	var conf Config
 
 	_, err := toml.DecodeFile(getConfigFilePath(), &conf)
+	musicPath, err := filepath.Abs(conf.MusicPath)
+
+	if err != nil {
+		musicPath = "~/Music"
+	}
 
 	if err != nil {
 		return Config{
@@ -32,7 +37,7 @@ func getConfig() Config {
 			ServerPort:      6900,
 			Port:            6600,
 			Host:            "127.0.0.1",
-			MusicPath:       filepath.Join("~/music"),
+			MusicPath:      musicPath, 
 		}
 	}
 
@@ -45,11 +50,8 @@ func getConfigFilePath() string {
 	baseConfigDir := strings.TrimSpace(os.Getenv("XDG_CONFIG_HOME"))
 
 	if baseConfigDir == "" {
-		systemHome, err := homedir.Dir()
-		if err != nil {
-			systemHome = "~"
-		}
-		baseConfigDir = filepath.Join(systemHome, ".config")
+		systemHome, _ := user.Current()
+		baseConfigDir = filepath.Join(systemHome.HomeDir, ".config")
 	}
 
 	return filepath.Join(baseConfigDir, filename)

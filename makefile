@@ -1,5 +1,5 @@
-- build:
+build:
 	go build -o ./lrc
 
-- run:
+run:
 	go run .

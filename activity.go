@@ -7,14 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type EventDataTitle struct {
-	Title     string
-	LyricType LyricType
-	Lyrics    []Lyric
-}
-
-type EventDataElapsed float32
-
 func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 	return func() tea.Msg {
 		line := ""
@@ -39,24 +31,10 @@ func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 
 				line = title
 				runner.Reset()
-
-				go sendEvent(Event{
-					name: "title",
-					data: EventDataTitle{
-						Title:     title,
-						LyricType: parser.lrcType,
-						Lyrics:    parser.Lyrics,
-					},
-				})
 			}
 
 			if elapsed != newElapsed {
 				elapsed = newElapsed
-
-				go sendEvent(Event{
-					name: "elapsed",
-					data: EventDataElapsed(newElapsed),
-				})
 			}
 
 			sub <- msg
