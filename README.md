@@ -6,6 +6,11 @@ Show mpd current playnig song lyrics
 
 ## Usage
 
+**Install**:
+```sh
+go install github.com/ony-boom/mpd-lrc@v1.0.1
+```
+
 Just create a the config file `mpdLrc.toml` at your `XDG_HOME_CONFIG` or `~/.config`.
 Build, and that's it.
 
