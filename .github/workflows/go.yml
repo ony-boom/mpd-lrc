@@ -1,25 +1,29 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
 name: Go
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*'  # Trigger only on version tags like v1.0.0
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build binary
+        run: |
+          mkdir dist
+          go build -o dist/mpd-lrc
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/mpd-lrc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
