@@ -2,9 +2,7 @@
 
 ![screenshot](docs/Screenshot.png)
 
-This was for learning purposes (go stuff).
-
-A useless cli to show current song lyrics, using mpd
+Show mpd current playnig song lyrics
 
 ## Usage
 
@@ -12,11 +10,5 @@ Just create a the config file `mpdLrc.toml` at your `XDG_HOME_CONFIG` or `~/.con
 Build, and that's it.
 
 ```sh
-cp docs/config_example.toml ~/.config
+cp docs/config_example.toml ~/.config/mpdLrc.toml
 ```
-
-### TODO
-
-- [ ] fix config file path.
-- [ ] Find out why there's two or more active line,
-  unless we manually scroll or change window size

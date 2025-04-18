@@ -1,7 +1,6 @@
-port = 6600
-host = "127.0.0.1"
-musicPath = "~/Music"
+port = 6600 # mpd port
+host = "127.0.0.1" # mpd host
+musicPath = "~/Music"# path to your music, `~` will be replaced with your home directory
 
 activeLineColor = "3"
 titleColor = "2"
-serverPort = 6900

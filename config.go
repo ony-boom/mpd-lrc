@@ -16,28 +16,27 @@ type Config struct {
 	TitleColor      string `toml:"titleColor"`
 	PollingDelay    int    `toml:"pollingDelay"`
 	ActiveLineColor string `toml:"activeLineColor"`
-	ServerPort      int    `toml:"serverPort"`
 }
 
 func getConfig() Config {
 	var conf Config
 
 	_, err := toml.DecodeFile(getConfigFilePath(), &conf)
-	musicPath, err := filepath.Abs(conf.MusicPath)
-
+	musicPath, err := filepath.Rel(conf.MusicPath, "/")
 	if err != nil {
 		musicPath = "~/Music"
 	}
+
+	musicPath = strings.Replace(musicPath, "~", os.Getenv("HOME"), 1)
 
 	if err != nil {
 		return Config{
 			ActiveLineColor: "3",
 			TitleColor:      "2",
 			PollingDelay:    150,
-			ServerPort:      6900,
 			Port:            6600,
 			Host:            "127.0.0.1",
-			MusicPath:      musicPath, 
+			MusicPath:       musicPath,
 		}
 	}
 
