@@ -1,6 +1,6 @@
 module github.com/ony-boom/mpd-lrc
 
-go 1.21.0
+go 1.23
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
