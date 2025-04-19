@@ -13,27 +13,19 @@ const useHighPerformanceRenderer = false
 var (
 	paddingBlock, paddingInline = 1, 1
 	basePadding                 = 1
-	baseStyle                   = func() lipgloss.Style {
-		return lipgloss.NewStyle().Padding(basePadding)
-	}()
 
-	titleStyle = func() lipgloss.Style {
-		color := getConfig().TitleColor
-		b := lipgloss.NormalBorder()
-		return lipgloss.NewStyle().
-			Foreground(lipgloss.Color(color)).
-			Border(b, true, false, true, false).
+	baseStyle = lipgloss.NewStyle().Padding(basePadding)
+
+	titleStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(getConfig().TitleColor)).
+			Border(lipgloss.NormalBorder(), true, false, true, false).
 			Padding(paddingBlock, paddingInline)
-	}()
 
-	followActiveStyle = func() lipgloss.Style {
-		return lipgloss.NewStyle().Padding(paddingBlock*2, 0)
-	}()
+	followActiveStyle = lipgloss.NewStyle().Padding(paddingBlock*2, 0)
 
-	activeLineStyle = func() lipgloss.Style {
-		color := getConfig().ActiveLineColor
-		return lipgloss.NewStyle().Foreground(lipgloss.Color(color)).Bold(true)
-	}
+	activeLineStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(getConfig().ActiveLineColor)).
+			Bold(true)
 )
 
 func (m model) Init() tea.Cmd {
@@ -114,7 +106,7 @@ func getSyncedContent() (string, int) {
 		newLine := lipgloss.NewStyle().UnsetForeground().Render(lrcLine.Content)
 
 		if index == runner.CurIndex() {
-			newLine = activeLineStyle().Render(newLine)
+			newLine = activeLineStyle.Render(newLine)
 		}
 
 		if lrcLine.Timestamp != parser.Lyrics[len(parser.Lyrics)-1].Timestamp {
