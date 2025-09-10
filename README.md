@@ -2,7 +2,7 @@
 
 ![screenshot](docs/Screenshot.png)
 
-Show mpd current playnig song lyrics
+Show mpd current playing song lyrics
 
 ## Usage
 
