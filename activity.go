@@ -7,6 +7,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+var pollingDelay = getConfig().PollingDelay
+
 func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 	return func() tea.Msg {
 		line := ""
@@ -20,7 +22,6 @@ func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 
 			if line != title {
 				lrcString, err := conn.getLrcString()
-
 				if err != nil {
 					lrcString = fmt.Sprintf("No .lrc file in the directory of %s", title)
 				}
@@ -39,7 +40,7 @@ func listenForActivity(sub chan responseMsg, conn myMpdConnection) tea.Cmd {
 
 			sub <- msg
 
-			time.Sleep(time.Millisecond * time.Duration(getConfig().PollingDelay))
+			time.Sleep(time.Millisecond * time.Duration(pollingDelay))
 			runner.TimeUpdate(elapsed)
 		}
 	}
